@@ -11,12 +11,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Inventory inventory = new Inventory();
-
-        Controllers.Main mainController = new Controllers.Main(inventory);
-        FXMLLoader loader = new FXMLLoader();
-        loader.setController(mainController);
-        Parent root = loader.load(getClass().getResource("/Views/Main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Main.fxml"));
+        loader.setController(new Controllers.Main(Inventory.createWithMockData()));
+        Parent root = loader.load();
 
         primaryStage.setScene(new Scene(root, 900, 640));
         primaryStage.setResizable(false);

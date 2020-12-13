@@ -10,14 +10,13 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -39,12 +38,18 @@ public class Main implements Initializable {
 
     @FXML
     private TableView<Product> productsTableView;
+    @FXML
+    private TextField productsSearchBox;
+    @FXML
+    private TableColumn<Product, Integer> productIdCol;
+    @FXML
+    private TableColumn<Product, String> productNameCol;
+    @FXML
+    private TableColumn<Product, Integer> productInventoryCol;
+    @FXML
+    private TableColumn<Product, Double> productPriceCol;
 
-    private Inventory inventory;
-
-    public Main() {
-        this.inventory = new Inventory();
-    }
+    final private Inventory inventory;
 
     public Main(Inventory inventory) {
         this.inventory = inventory;
@@ -52,12 +57,8 @@ public class Main implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.initializePartsViewTable();
-        inventory.addPart(new InHouse(1, "Test", 0.69, 420, 0, 9001, 2));
-        inventory.addPart(new InHouse(2, "Widget", 0.90, 420, 0, 9001, 2));
-        inventory.addPart(new Outsourced(3, "Another", 0.90, 420, 0, 9001, "didney"));
-        partsTableView.setItems(inventory.getAllParts());
-        partsTableView.refresh();
+        initializePartsViewTable();
+        initializeProductsViewTable();
     }
 
     private void initializePartsViewTable() {
@@ -65,6 +66,17 @@ public class Main implements Initializable {
         partNameCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getName()));
         partInventoryCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getStock()).asObject());
         partPriceCol.setCellValueFactory(param -> new SimpleDoubleProperty(param.getValue().getPrice()).asObject());
+        partsTableView.setItems(inventory.getAllParts());
+        partsTableView.refresh();
+    }
+
+    private void initializeProductsViewTable() {
+        productIdCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getId()).asObject());
+        productNameCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getName()));
+        productInventoryCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getStock()).asObject());
+        productPriceCol.setCellValueFactory(param -> new SimpleDoubleProperty(param.getValue().getPrice()).asObject());
+        productsTableView.setItems(inventory.getAllProducts());
+        productsTableView.refresh();
     }
 
     @FXML
@@ -82,18 +94,20 @@ public class Main implements Initializable {
         this.productsTableView = productsTableView;
     }
 
-    public void setInventory(Inventory inventory) {
-        this.inventory = inventory;
-    }
-
     @FXML
     private void filterParts(KeyEvent event) {
         ObservableList<Part> parts = inventory.getAllParts();
 
-        String value = partsSearchBox.getText().toUpperCase();
+        String value = partsSearchBox.getText().toUpperCase().trim();
 
         if (value != "") {
             parts = new FilteredList<>(parts).filtered(part -> part.getName().toUpperCase().contains(value));
+        }
+
+        if (parts.size() == 0) {
+            setTableViewNotFoundPlaceholder(partsTableView);
+        } else {
+            restoreTableViewPlaceholder(partsTableView);
         }
 
         partsTableView.setItems(parts);
@@ -102,7 +116,30 @@ public class Main implements Initializable {
 
     @FXML
     private void filterProducts(KeyEvent event) {
-        // TODO: implement
+        ObservableList<Product> products = inventory.getAllProducts();
+
+        String value = productsSearchBox.getText().toUpperCase().trim();
+
+        if (value != "") {
+            products = new FilteredList<>(products).filtered(product -> product.getName().toUpperCase().contains(value));
+        }
+
+        if (products.size() == 0) {
+            setTableViewNotFoundPlaceholder(productsTableView);
+        } else {
+            restoreTableViewPlaceholder(productsTableView);
+        }
+
+        productsTableView.setItems(products);
+        productsTableView.refresh();
+    }
+
+    private void setTableViewNotFoundPlaceholder(TableView tableView) {
+        tableView.setPlaceholder(new Label("No results found!"));
+    }
+
+    private void restoreTableViewPlaceholder(TableView tableView) {
+        tableView.setPlaceholder(new Label("No content in table"));
     }
 
     @FXML
@@ -110,5 +147,12 @@ public class Main implements Initializable {
         Part selectedPart = partsTableView.getSelectionModel().getSelectedItem();
         inventory.deletePart(selectedPart);
         partsTableView.refresh();
+    }
+
+    @FXML
+    private void deleteProduct(ActionEvent event) {
+        Product selectedProduct = productsTableView.getSelectionModel().getSelectedItem();
+        inventory.deleteProduct(selectedProduct);
+        productsTableView.refresh();
     }
 }

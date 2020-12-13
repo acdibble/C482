@@ -10,6 +10,17 @@ public class Inventory {
     final private ObservableList<Part> allParts = FXCollections.observableArrayList();
     final private ObservableList<Product> allProducts = FXCollections.observableArrayList();
 
+    public static Inventory createWithMockData() {
+        Inventory inventory = new Inventory();
+
+        inventory.addPart(new InHouse(1, "Test", 0.49, 123, 0, 9001, 2));
+        inventory.addPart(new InHouse(2, "Widget", 0.90, 456, 0, 9001, 2));
+        inventory.addPart(new Outsourced(3, "Another", 0.91, 789, 0, 9001, "didney"));
+        inventory.addProduct(new Product(1, "Fun toy", 1.00, 70, 1, 100));
+
+        return inventory;
+    }
+
     /**
      * @param newPart the new part to add to the list
      */

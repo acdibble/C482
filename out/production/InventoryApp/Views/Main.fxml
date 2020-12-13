@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.Main">
+<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <MenuBar VBox.vgrow="NEVER">
             <menus>
@@ -47,10 +47,10 @@
                     <children>
                         <TableView fx:id="productsTableView" layoutX="23.0" layoutY="86.0" prefHeight="400.0" prefWidth="400.0">
                             <columns>
-                                <TableColumn editable="false" prefWidth="75.0" text="Product ID" />
-                                <TableColumn editable="false" prefWidth="103.33338165283203" text="Product Name" />
-                                <TableColumn editable="false" prefWidth="92.66661071777344" text="Inventory Level" />
-                                <TableColumn editable="false" prefWidth="128.0" text="Price/Cost per unit" />
+                                <TableColumn fx:id="productIdCol" editable="false" prefWidth="75.0" text="Product ID" />
+                                <TableColumn fx:id="productNameCol" editable="false" prefWidth="103.33338165283203" text="Product Name" />
+                                <TableColumn fx:id="productInventoryCol" editable="false" prefWidth="92.66661071777344" text="Inventory Level" />
+                                <TableColumn fx:id="productPriceCol" editable="false" prefWidth="128.0" text="Price/Cost per unit" />
                             </columns>
                         </TableView>
                         <TextField fx:id="productsSearchBox" layoutX="250.0" layoutY="53.0" onKeyTyped="#filterProducts" prefHeight="25.0" prefWidth="173.0" promptText="Search product by ID or name" />
@@ -58,7 +58,7 @@
                         <Label layoutX="23.0" layoutY="57.0" text="Products" />
                         <Button layoutX="270.0" layoutY="497.0" mnemonicParsing="false" text="Add" />
                         <Button layoutX="312.0" layoutY="497.0" mnemonicParsing="false" text="Modify" />
-                        <Button layoutX="370.0" layoutY="497.0" mnemonicParsing="false" text="Delete" />
+                        <Button layoutX="370.0" layoutY="497.0" mnemonicParsing="false" onAction="#deleteProduct" text="Delete" />
                     </children>
                 </AnchorPane>
             </items>
