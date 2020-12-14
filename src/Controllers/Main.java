@@ -45,6 +45,7 @@ public class Main implements Initializable {
     final private Inventory inventory;
 
     private boolean partFormOpen = false;
+    private boolean productFormOpen = false;
 
     public Main(Inventory inventory) {
         this.inventory = inventory;
@@ -54,6 +55,7 @@ public class Main implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         initializeProductsViewTable();
         partsTableViewController.setParts(inventory.getAllParts());
+        partsTableViewController.setHeight(400);
     }
 
     private void initializeProductsViewTable() {
@@ -140,10 +142,37 @@ public class Main implements Initializable {
         openPartForm(new CreatePartForm(inventory));
     }
 
-
     @FXML
     private void modifyPart(ActionEvent event) {
         Part selectedPart = partsTableViewController.getSelectedPart();
         openPartForm(new ModifyPartForm(inventory, selectedPart));
+    }
+
+    private void openProductForm(ProductForm controller) {
+        if (productFormOpen) return;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ProductForm.fxml"));
+            loader.setController(controller);
+            Scene scene = new Scene(loader.load(), 1000, 600);
+            Stage stage = new Stage();
+            stage.setTitle("Create new product");
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.setOnHidden(ev -> {
+                productFormOpen = false;
+                productsTableView.refresh();
+            });
+            this.productFormOpen = true;
+            stage.showAndWait();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            productFormOpen = false;
+        }
+    }
+
+    @FXML
+    private void createProduct(ActionEvent event) {
+        openProductForm(new CreateProductForm());
     }
 }

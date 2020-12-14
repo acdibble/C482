@@ -39,4 +39,5 @@ public class CreatePartForm extends PartForm {
             inventory.addPart(new Outsourced(id, formData.name, formData.price, formData.inv, formData.min, formData.max, formData.companyName));
         }
     }
+
 }

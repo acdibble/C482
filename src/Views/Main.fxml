@@ -48,7 +48,7 @@
                         <TextField fx:id="productsSearchBox" layoutX="250.0" layoutY="53.0" onKeyTyped="#filterProducts" prefHeight="25.0" prefWidth="173.0" promptText="Search product by ID or name" />
                         <Button layoutX="403.0" layoutY="560.0" mnemonicParsing="false" onAction="#handleExit" text="Exit" />
                         <Label layoutX="23.0" layoutY="57.0" text="Products" />
-                        <Button layoutX="270.0" layoutY="497.0" mnemonicParsing="false" text="Add" />
+                        <Button layoutX="270.0" layoutY="497.0" mnemonicParsing="false" text="Add" onAction="#createProduct" />
                         <Button layoutX="312.0" layoutY="497.0" mnemonicParsing="false" text="Modify" />
                         <Button layoutX="370.0" layoutY="497.0" mnemonicParsing="false" onAction="#deleteProduct" text="Delete" />
                     </children>

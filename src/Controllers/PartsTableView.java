@@ -82,4 +82,13 @@ public class PartsTableView implements Initializable {
     public void refresh() {
         tableView.refresh();
     }
+
+    public void setHeight(double v) {
+        tableView.setPrefHeight(v);
+    }
+
+    public void hideSearchBox() {
+        partsSearchBox.setVisible(false);
+        partsSearchBox.setDisable(true);
+    }
 }
