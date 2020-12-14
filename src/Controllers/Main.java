@@ -9,12 +9,15 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -50,6 +53,8 @@ public class Main implements Initializable {
     private TableColumn<Product, Double> productPriceCol;
 
     final private Inventory inventory;
+
+    private boolean partFormOpen = false;
 
     public Main(Inventory inventory) {
         this.inventory = inventory;
@@ -154,5 +159,39 @@ public class Main implements Initializable {
         Product selectedProduct = productsTableView.getSelectionModel().getSelectedItem();
         inventory.deleteProduct(selectedProduct);
         productsTableView.refresh();
+    }
+
+    private void openPartForm(PartForm controller) {
+        if (partFormOpen) return;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/PartForm.fxml"));
+            loader.setController(controller);
+            Scene scene = new Scene(loader.load(), 600, 600);
+            Stage stage = new Stage();
+            stage.setTitle("Create new part");
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+            stage.setOnHidden(ev -> {
+                partFormOpen = false;
+                partsTableView.refresh();
+
+            });
+            this.partFormOpen = true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @FXML
+    private void createPart(ActionEvent event) {
+        openPartForm(new CreatePartForm(inventory));
+    }
+
+
+    @FXML
+    private void modifyPart(ActionEvent event) {
+        Part selectedPart = partsTableView.getSelectionModel().getSelectedItem();
+        openPartForm(new ModifyPartForm(inventory, selectedPart));
     }
 }

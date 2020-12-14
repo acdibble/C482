@@ -37,8 +37,8 @@
                             </columns>
                         </TableView>
                         <Label layoutX="30.0" layoutY="55.0" text="Parts" />
-                        <Button layoutX="273.0" layoutY="498.0" mnemonicParsing="false" text="Add" />
-                        <Button layoutX="315.0" layoutY="498.0" mnemonicParsing="false" text="Modify" />
+                        <Button layoutX="273.0" layoutY="498.0" mnemonicParsing="false" text="Add" onAction="#createPart" />
+                        <Button layoutX="315.0" layoutY="498.0" mnemonicParsing="false" text="Modify" onAction="#modifyPart" />
                         <Button layoutX="373.0" layoutY="498.0" mnemonicParsing="false" onAction="#deletePart" text="Delete" />
                         <TextField fx:id="partsSearchBox" layoutX="250.0" layoutY="51.0" onKeyTyped="#filterParts" prefHeight="25.0" prefWidth="173.0" promptText="Search part by ID or name" />
                     </children>
