@@ -40,9 +40,9 @@ public class ModifyPartForm extends PartForm {
         if (!newTypeMatchesOld()) {
            inventory.deletePart(part);
            if (type == Type.InHouse) {
-               part = new InHouse(part.getId(), null, 0.0, 0, 0, 0, 0);
+               part = new InHouse(part.getId(), "", 0.0, 0, 0, 0, 0);
            } else {
-               part = new Outsourced(part.getId(), null, 0.0, 0, 0, 0, null);
+               part = new Outsourced(part.getId(), "", 0.0, 0, 0, 0, null);
            }
            inventory.addPart(part);
         }

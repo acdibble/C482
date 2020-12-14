@@ -27,17 +27,7 @@ import java.util.ResourceBundle;
  */
 public class Main implements Initializable {
     @FXML
-    private TableView<Part> partsTableView;
-    @FXML
-    private TextField partsSearchBox;
-    @FXML
-    private TableColumn<Part, Integer> partIdCol;
-    @FXML
-    private TableColumn<Part, String> partNameCol;
-    @FXML
-    private TableColumn<Part, Integer> partInventoryCol;
-    @FXML
-    private TableColumn<Part, Double> partPriceCol;
+    private PartsTableView partsTableViewController;
 
     @FXML
     private TableView<Product> productsTableView;
@@ -62,17 +52,8 @@ public class Main implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initializePartsViewTable();
         initializeProductsViewTable();
-    }
-
-    private void initializePartsViewTable() {
-        partIdCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getId()).asObject());
-        partNameCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getName()));
-        partInventoryCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getStock()).asObject());
-        partPriceCol.setCellValueFactory(param -> new SimpleDoubleProperty(param.getValue().getPrice()).asObject());
-        partsTableView.setItems(inventory.getAllParts());
-        partsTableView.refresh();
+        partsTableViewController.setParts(inventory.getAllParts());
     }
 
     private void initializeProductsViewTable() {
@@ -90,43 +71,15 @@ public class Main implements Initializable {
     }
 
     @FXML
-    public void setPartsTableView(TableView<Part> partsTableView) {
-        this.partsTableView = partsTableView;
-    }
-
-    @FXML
-    public void setProductsTableView(TableView<Product> productsTableView) {
-        this.productsTableView = productsTableView;
-    }
-
-    @FXML
-    private void filterParts(KeyEvent event) {
-        ObservableList<Part> parts = inventory.getAllParts();
-
-        String value = partsSearchBox.getText().toUpperCase().trim();
-
-        if (value != "") {
-            parts = new FilteredList<>(parts).filtered(part -> part.getName().toUpperCase().contains(value));
-        }
-
-        if (parts.size() == 0) {
-            setTableViewNotFoundPlaceholder(partsTableView);
-        } else {
-            restoreTableViewPlaceholder(partsTableView);
-        }
-
-        partsTableView.setItems(parts);
-        partsTableView.refresh();
-    }
-
-    @FXML
     private void filterProducts(KeyEvent event) {
         ObservableList<Product> products = inventory.getAllProducts();
 
         String value = productsSearchBox.getText().toUpperCase().trim();
 
         if (value != "") {
-            products = new FilteredList<>(products).filtered(product -> product.getName().toUpperCase().contains(value));
+            products = new FilteredList<>(products).filtered(product -> {
+                return product.getName().toUpperCase().contains(value) || String.valueOf(product.getId()).contains(value);
+            });
         }
 
         if (products.size() == 0) {
@@ -149,9 +102,9 @@ public class Main implements Initializable {
 
     @FXML
     private void deletePart(ActionEvent event) {
-        Part selectedPart = partsTableView.getSelectionModel().getSelectedItem();
+        Part selectedPart = partsTableViewController.getSelectedPart();
         inventory.deletePart(selectedPart);
-        partsTableView.refresh();
+        partsTableViewController.refresh();
     }
 
     @FXML
@@ -174,8 +127,7 @@ public class Main implements Initializable {
             stage.show();
             stage.setOnHidden(ev -> {
                 partFormOpen = false;
-                partsTableView.refresh();
-
+                partsTableViewController.refresh();
             });
             this.partFormOpen = true;
         } catch (Exception e) {
@@ -191,7 +143,7 @@ public class Main implements Initializable {
 
     @FXML
     private void modifyPart(ActionEvent event) {
-        Part selectedPart = partsTableView.getSelectionModel().getSelectedItem();
+        Part selectedPart = partsTableViewController.getSelectedPart();
         openPartForm(new ModifyPartForm(inventory, selectedPart));
     }
 }

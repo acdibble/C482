@@ -158,8 +158,6 @@ public abstract class PartForm implements Initializable {
     }
 
     private void displayError(String message) {
-        System.out.println("Message to print:");
-        System.out.println(message);
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Field validation error");
         alert.setHeaderText(null);
