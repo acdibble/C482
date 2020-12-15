@@ -36,7 +36,7 @@ public class ModifyPartForm extends PartForm {
     }
 
     @Override
-    protected void saveData(FormData formData) {
+    protected void saveData() {
         if (!newTypeMatchesOld()) {
            inventory.deletePart(part);
            if (type == Type.InHouse) {
@@ -47,16 +47,21 @@ public class ModifyPartForm extends PartForm {
            inventory.addPart(part);
         }
 
-        part.setName(formData.name);
-        part.setPrice(formData.price);
-        part.setStock(formData.inv);
-        part.setMax(formData.max);
-        part.setMin(formData.min);
+        part.setName(validatedData.name);
+        part.setPrice(validatedData.price);
+        part.setStock(validatedData.inv);
+        part.setMax(validatedData.max);
+        part.setMin(validatedData.min);
 
         if (part instanceof Outsourced) {
-            ((Outsourced) part).setCompanyName(formData.companyName);
+            ((Outsourced) part).setCompanyName(validatedData.companyName);
         } else {
-            ((InHouse) part).setMachineId(formData.machineId);
+            ((InHouse) part).setMachineId(validatedData.machineId);
         }
+    }
+
+    @Override
+    public String getWindowTitle() {
+        return "Update part";
     }
 }

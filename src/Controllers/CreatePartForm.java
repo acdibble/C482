@@ -3,6 +3,7 @@ package Controllers;
 import Models.InHouse;
 import Models.Inventory;
 import Models.Outsourced;
+import Models.Part;
 
 import java.net.URL;
 import java.util.Collections;
@@ -30,14 +31,18 @@ public class CreatePartForm extends PartForm {
     }
 
     @Override
-    protected void saveData(FormData formData) {
+    protected void saveData() {
         int id = Collections.max(inventory.getAllParts().stream().map(part -> part.getId()).collect(Collectors.toList())) + 1;
 
         if (type == Type.InHouse) {
-            inventory.addPart(new InHouse(id, formData.name, formData.price, formData.inv, formData.min, formData.max, formData.machineId));
+            inventory.addPart(new InHouse(id, validatedData.name, validatedData.price, validatedData.inv, validatedData.min, validatedData.max, validatedData.machineId));
         } else {
-            inventory.addPart(new Outsourced(id, formData.name, formData.price, formData.inv, formData.min, formData.max, formData.companyName));
+            inventory.addPart(new Outsourced(id, validatedData.name, validatedData.price, validatedData.inv, validatedData.min, validatedData.max, validatedData.companyName));
         }
     }
 
+    @Override
+    public String getWindowTitle() {
+        return "Create new part";
+    }
 }

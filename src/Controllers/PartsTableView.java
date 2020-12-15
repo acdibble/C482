@@ -91,4 +91,8 @@ public class PartsTableView implements Initializable {
         partsSearchBox.setVisible(false);
         partsSearchBox.setDisable(true);
     }
+
+    public TableView<Part> getTableView() {
+        return tableView;
+    }
 }

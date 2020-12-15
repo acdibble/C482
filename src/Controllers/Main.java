@@ -44,8 +44,7 @@ public class Main implements Initializable {
 
     final private Inventory inventory;
 
-    private boolean partFormOpen = false;
-    private boolean productFormOpen = false;
+    private boolean formOpen = false;
 
     public Main(Inventory inventory) {
         this.inventory = inventory;
@@ -117,24 +116,7 @@ public class Main implements Initializable {
     }
 
     private void openPartForm(PartForm controller) {
-        if (partFormOpen) return;
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/PartForm.fxml"));
-            loader.setController(controller);
-            Scene scene = new Scene(loader.load(), 600, 600);
-            Stage stage = new Stage();
-            stage.setTitle("Create new part");
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.show();
-            stage.setOnHidden(ev -> {
-                partFormOpen = false;
-                partsTableViewController.refresh();
-            });
-            this.partFormOpen = true;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        openForm(controller, "/Views/PartForm.fxml", partsTableViewController.getTableView(), 600,600);
     }
 
     @FXML
@@ -149,30 +131,34 @@ public class Main implements Initializable {
     }
 
     private void openProductForm(ProductForm controller) {
-        if (productFormOpen) return;
+        openForm(controller, "/Views/ProductForm.fxml", productsTableView, 1000, 600);
+    }
+
+    private void openForm(Form formController, String resourceURL, TableView tableView, double width, double height) {
+        if (formOpen) return;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ProductForm.fxml"));
-            loader.setController(controller);
-            Scene scene = new Scene(loader.load(), 1000, 600);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(resourceURL));
+            loader.setController(formController);
+            Scene scene = new Scene(loader.load(), width, height);
             Stage stage = new Stage();
-            stage.setTitle("Create new product");
             stage.setScene(scene);
+            stage.setTitle(formController.getWindowTitle());
             stage.setResizable(false);
             stage.setOnHidden(ev -> {
-                productFormOpen = false;
-                productsTableView.refresh();
+                formOpen = false;
+                tableView.refresh();
             });
-            this.productFormOpen = true;
+            formOpen = true;
             stage.showAndWait();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         } finally {
-            productFormOpen = false;
+            formOpen = false;
         }
     }
 
     @FXML
     private void createProduct(ActionEvent event) {
-        openProductForm(new CreateProductForm());
+        openProductForm(new CreateProductForm(inventory));
     }
 }

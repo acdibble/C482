@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public abstract class PartForm implements Initializable {
+public abstract class PartForm extends Form implements Initializable {
     protected class FormData {
         String name;
         int inv;
@@ -59,6 +59,8 @@ public abstract class PartForm implements Initializable {
 
     protected Type type;
     protected Inventory inventory;
+
+    protected FormData validatedData;
 
     public PartForm(Inventory inventory) {
         this.inventory = inventory;
@@ -117,93 +119,30 @@ public abstract class PartForm implements Initializable {
         extraLabel.setText("Company Name");
     }
 
-    abstract protected void saveData(FormData formData);
-
     @FXML
-    private void handleSave(ActionEvent event) {
-        try {
-            saveData(getFormData());
-        } catch (Exception e) {
-            this.displayError(e.getMessage());
-            return;
-        }
-
-        this.handleClose(event);
-    }
-
-    @FXML
-    private void handleClose(ActionEvent event) {
+    protected void handleClose(ActionEvent event) {
         Stage stage = (Stage) idField.getScene().getWindow();
         stage.hide();
     }
 
-    private FormData getFormData() throws Exception {
+    @Override
+    protected void validateData() throws Exception {
         FormData formData = new FormData();
-        formData.name = formatStringField("Name", nameField.getText());
-        formData.inv = formatIntField("Inv", invField.getText());
-        formData.price = formatDoubleField("Price", priceField.getText());
-        formData.max = formatIntField("Max", maxField.getText());
-        formData.min = formatIntField("Min", minField.getText());
+        formData.name = formatStringField("Name", nameField);
+        formData.inv = formatIntField("Inv", invField);
+        formData.price = formatDoubleField("Price", priceField);
+        formData.max = formatIntField("Max", maxField);
+        formData.min = formatIntField("Min", minField);
 
         if (formData.min > formData.inv || formData.max < formData.inv) {
             throw new Exception("Inv should be between min and max.");
         }
 
         if (type == Type.InHouse) {
-            formData.machineId = formatIntField("Machine ID", extraField.getText());
+            formData.machineId = formatIntField("Machine ID", extraField);
         } else {
-            formData.companyName = formatStringField("Company Name", extraField.getText());
+            formData.companyName = formatStringField("Company Name", extraField);
         }
-        return formData;
-    }
-
-    private void displayError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Field validation error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private double formatDoubleField(String fieldName, String value) throws Exception {
-        double result;
-        try {
-            result = Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            throw new Exception(getImproperFormatMessage(fieldName));
-        }
-
-        return validateIsPositive(fieldName, result);
-    }
-
-    private String formatStringField(String field, String data) throws Exception {
-        String trimmed = data.trim();
-        if (trimmed.length() == 0) {
-            throw new Exception(String.format("The field for %s should not be empty", field));
-        }
-        return trimmed;
-    }
-
-    private int formatIntField(String fieldName, String value) throws Exception {
-        int result;
-        try {
-            result = Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            throw new Exception(getImproperFormatMessage(fieldName));
-        }
-
-        return validateIsPositive(fieldName, result);
-    }
-
-    private String getImproperFormatMessage(String field) {
-        return String.format("Unable to save part. Please check format of the field %s", field);
-    }
-
-    private <T extends Number> T validateIsPositive(String field, T value) throws Exception {
-        if (new BigDecimal(value.doubleValue()).compareTo(new BigDecimal(0)) == -1) {
-            throw new Exception(String.format("The value for the field %s should not be negative", field));
-        }
-
-        return value;
+        validatedData = formData;
     }
 }

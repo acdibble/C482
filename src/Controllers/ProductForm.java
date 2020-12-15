@@ -1,41 +1,56 @@
 package Controllers;
 
+import Models.Inventory;
 import Models.Part;
+import Models.Product;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public abstract class ProductForm implements Initializable {
+public abstract class ProductForm extends Form implements Initializable {
     @FXML
-    PartsTableView allPartsTableViewController;
+    private PartsTableView allPartsTableViewController;
     @FXML
-    PartsTableView associatedPartsTableViewController;
+    private PartsTableView associatedPartsTableViewController;
 
     @FXML
-    Label formLabel;
+    private Label formLabel;
     @FXML
-    TextField idField;
+    private TextField idField;
     @FXML
-    TextField nameField;
+    private TextField nameField;
     @FXML
-    TextField invField;
+    private TextField invField;
     @FXML
-    TextField priceField;
+    private TextField priceField;
     @FXML
-    TextField maxField;
+    private TextField maxField;
     @FXML
-    TextField minField;
+    private TextField minField;
+
+    protected Product product;
+    protected Inventory inventory;
+
+    public ProductForm(Inventory inventory) {
+        this.inventory = inventory;
+        this.product = new Product(0, null, 0, 0, 0, 0);
+    }
+
+    public ProductForm(Inventory inventory, Product product) {
+        this.inventory = inventory;
+        this.product = product;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setPartsForTables();
         associatedPartsTableViewController.hideSearchBox();
         formLabel.setText(getFormLabelValue());
     }
@@ -50,23 +65,37 @@ public abstract class ProductForm implements Initializable {
         allPartsTableViewController.setParts(parts);
     }
 
-    @FXML
-    private void handleSave(ActionEvent event) {
-
+    protected void validateData() throws Exception {
+        product.setName(formatStringField("Name", nameField));
+        product.setPrice(formatDoubleField("Price", priceField));
+        product.setStock(formatIntField("Inv", invField));
+        product.setMin(formatIntField("Min", minField));
+        product.setMax(formatIntField("Max", maxField));
     }
 
     @FXML
-    private void handleClose(ActionEvent event) {
-
+    protected void handleClose(ActionEvent event) {
+        Stage stage = (Stage) idField.getScene().getWindow();
+        stage.hide();
     }
 
     @FXML
     private void removePart(ActionEvent event) {
-
+        product.deletedAssociatedPart(associatedPartsTableViewController.getSelectedPart());
+        setPartsForTables();
     }
 
     @FXML
     private void addPart(ActionEvent event) {
+        product.addAssociatedPart(allPartsTableViewController.getSelectedPart());
+        setPartsForTables();
+    }
 
+    private void setPartsForTables() {
+        ObservableList<Part> associatedParts = product.getAllAssociatedParts();
+        associatedPartsTableViewController.setParts(associatedParts);
+
+        ObservableList<Part> unassociatedParts = inventory.getAllParts().filtered(p -> !associatedParts.contains(p));
+        allPartsTableViewController.setParts(unassociatedParts);
     }
 }
