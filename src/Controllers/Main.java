@@ -24,6 +24,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
+ * The main controller for the application. It handles displaying all the parts and products
+ * and spawning new windows when a user wants to add or modify a part or product.
  * @author Andrew Dibble
  */
 public class Main implements Initializable {
@@ -58,6 +60,9 @@ public class Main implements Initializable {
         partsTableViewController.setHeight(400);
     }
 
+    /**
+     * Sets the column types so the data is properly displayed
+     */
     private void initializeProductsViewTable() {
         productIdCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getId()).asObject());
         productNameCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getName()));
@@ -67,11 +72,18 @@ public class Main implements Initializable {
         productsTableView.refresh();
     }
 
+    /**
+     * exits the application
+     */
     @FXML
     private void handleExit() {
         Platform.exit();
     }
 
+    /**
+     * Filters products based off the contents of the search box
+     * @param event a key event from JavaFX
+     */
     @FXML
     private void filterProducts(KeyEvent event) {
         ObservableList<Product> products = inventory.getAllProducts();
@@ -94,14 +106,26 @@ public class Main implements Initializable {
         productsTableView.refresh();
     }
 
+    /**
+     * Updates the UI message to let the user know no results were found after a filter.
+     * @param tableView the table view being filtered
+     */
     private void setTableViewNotFoundPlaceholder(TableView tableView) {
         tableView.setPlaceholder(new Label("No results found!"));
     }
 
+    /**
+     * Restores the UI message to its default state after the empty filter is gone.
+     * @param tableView the table view being filtered
+     */
     private void restoreTableViewPlaceholder(TableView tableView) {
         tableView.setPlaceholder(new Label("No content in table"));
     }
 
+    /**
+     * removes a part from the inventory
+     * @param event an action event from JavaFX
+     */
     @FXML
     private void deletePart(ActionEvent event) {
         Part selectedPart = partsTableViewController.getSelectedPart();
@@ -109,6 +133,10 @@ public class Main implements Initializable {
         partsTableViewController.refresh();
     }
 
+    /**
+     * removes a product from the inventory
+     * @param event an action event from JavaFX
+     */
     @FXML
     private void deleteProduct(ActionEvent event) {
         Product selectedProduct = productsTableView.getSelectionModel().getSelectedItem();
@@ -116,37 +144,77 @@ public class Main implements Initializable {
         productsTableView.refresh();
     }
 
+    /**
+     * opens the part form with the passed-in controller
+     * @param controller a subclass of the abstract PartForm controller
+     */
     private void openPartForm(PartForm controller) {
         openForm(controller, "/Views/PartForm.fxml", partsTableViewController.getTableView(), 600,600);
     }
 
+    /**
+     * opens the part form with a CreatePartForm controller
+     * @param event an action event from JavaFX
+     */
     @FXML
     private void createPart(ActionEvent event) {
         openPartForm(new CreatePartForm(inventory));
     }
 
+    /**
+     * opens the part form with a ModifyPartForm controller
+     * @param event an action event from JavaFX
+     */
     @FXML
     private void modifyPart(ActionEvent event) {
         Part selectedPart = partsTableViewController.getSelectedPart();
         openPartForm(new ModifyPartForm(inventory, selectedPart));
     }
 
+    /**
+     * opens the product form with the passed-in controller
+     * @param controller a subclass of the abstract ProductForm controller
+     */
     private void openProductForm(ProductForm controller) {
         openForm(controller, "/Views/ProductForm.fxml", productsTableView, 1000, 600);
     }
 
+    /**
+     * opens the product form with a CreateProductForm controller
+     * @param event an action event from JavaFX
+     */
+    @FXML
+    private void createProduct(ActionEvent event) {
+        openProductForm(new CreateProductForm(inventory));
+    }
+
+    /**
+     * opens the product form with a ModifyProductForm controller
+     * @param event an action event from JavaFX
+     */
+    @FXML
+    private void modifyProduct(ActionEvent event) {
+        Product product = productsTableView.getSelectionModel().getSelectedItem();
+        if (product != null) {
+            openProductForm(new ModifyProductForm(inventory, product));
+        }
+    }
+
+    /**
+     * Opens a new window the the requested form controller and resource
+     * @param formController a PartForm or ProductForm controller
+     * @param resourceURL the path to the FXML file
+     * @param tableView a table view to refresh after the form closes
+     * @param width the desired width of the new window
+     * @param height the desired height of the new window
+     */
     private void openForm(Form formController, String resourceURL, TableView tableView, double width, double height) {
-        System.out.println("openForm");
         if (formOpen) return;
-        System.out.println("no form open");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(resourceURL));
             loader.setController(formController);
-            System.out.println("controller set");
             Scene scene = new Scene(loader.load(), width, height);
-            System.out.println("scene created");
             Stage stage = new Stage();
-            System.out.println("new stage created");
             stage.setScene(scene);
             stage.setTitle(formController.getWindowTitle());
             stage.setResizable(false);
@@ -155,51 +223,11 @@ public class Main implements Initializable {
                 tableView.refresh();
             });
             formOpen = true;
-            System.out.println("showing");
             stage.showAndWait();
         } catch (Exception e) {
             System.out.println(e);
         } finally {
             formOpen = false;
-        }
-    }
-
-    @FXML
-    private void createProduct(ActionEvent event) throws IOException {
-//        System.out.println("createProduct");
-//        openProductForm(new CreateProductForm(inventory));
-        CreateProductForm formController = new CreateProductForm(inventory);
-        System.out.println("openForm");
-        if (formOpen) return;
-        System.out.println("no form open");
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ProductForm.fxml"));
-            loader.setController(formController);
-            System.out.println("controller set");
-            Scene scene = new Scene(loader.load(), 1000, 600);
-            System.out.println("scene created");
-            Stage stage = new Stage();
-            System.out.println("new stage created");
-            stage.setScene(scene);
-            stage.setTitle(formController.getWindowTitle());
-            stage.setResizable(false);
-            stage.setOnHidden(ev -> {
-                formOpen = false;
-                productsTableView.refresh();
-            });
-            formOpen = true;
-            System.out.println("showing");
-            stage.showAndWait();
-        } finally {
-            formOpen = false;
-        }
-    }
-
-    @FXML
-    private void modifyProduct(ActionEvent event) {
-        Product product = productsTableView.getSelectionModel().getSelectedItem();
-        if (product != null) {
-            openProductForm(new ModifyProductForm(inventory, product));
         }
     }
 }

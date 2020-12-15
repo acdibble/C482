@@ -14,6 +14,11 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Abstract base class for the creation and modification of products
+ * @author Andrew Dibble
+ * @see Form
+ */
 public abstract class ProductForm extends Form implements Initializable {
     @FXML
     private PartsTableView allPartsTableViewController;
@@ -53,10 +58,13 @@ public abstract class ProductForm extends Form implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         associatedPartsTableViewController.hideSearchBox();
-        formLabel.setText(getFormLabelValue());
+        formLabel.setText(getFormLabel());
         populateForm();
     }
 
+    /**
+     * Fills in the form with product data, if modifying, or just the ID field
+     */
     private void populateForm() {
         if (product != null) {
             idField.setText(String.valueOf(product.getId()));
@@ -66,23 +74,16 @@ public abstract class ProductForm extends Form implements Initializable {
             maxField.setText(String.valueOf(product.getMax()));
             minField.setText(String.valueOf(product.getMin()));
             product.getAllAssociatedParts().forEach(part -> formData.addAssociatedPart(part));
-        } else {
-            idField.setText("Auto Gen - Disabled");
         }
+        idField.setText(getIdFieldValue());
         setPartsForTables();
         idField.setDisable(true);
     }
 
-    abstract protected String getFormLabelValue();
-
-    private void setAssociatedParts(ObservableList<Part> parts) {
-        associatedPartsTableViewController.setParts(parts);
-    }
-
-    public void setAllParts(ObservableList<Part> parts) {
-        allPartsTableViewController.setParts(parts);
-    }
-
+    /**
+     * Validates and sets the form data into a placeholder Product object
+     * @throws Exception if any parsing or field validation fails
+     */
     protected void validateData() throws Exception {
         formData.setName(formatStringField("Name", nameField));
         formData.setPrice(formatDoubleField("Price", priceField));
@@ -91,6 +92,7 @@ public abstract class ProductForm extends Form implements Initializable {
         formData.setMax(formatIntField("Max", maxField));
     }
 
+    @Override
     @FXML
     protected void handleClose(ActionEvent event) {
         Stage stage = (Stage) idField.getScene().getWindow();
@@ -105,7 +107,6 @@ public abstract class ProductForm extends Form implements Initializable {
             setPartsForTables();
         }
     }
-
 
     @FXML
     private void addPart(ActionEvent event) {

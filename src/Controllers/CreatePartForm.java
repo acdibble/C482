@@ -10,6 +10,12 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+/**
+ * Subclass of the abstract class PartForm that concerns itself solely
+ * with the creation of new parts
+ * @author Andrew Dibble
+ * @see Controllers.PartForm
+ */
 public class CreatePartForm extends PartForm {
     public CreatePartForm(Inventory inventory) {
         super(inventory);
@@ -22,12 +28,13 @@ public class CreatePartForm extends PartForm {
     }
 
     @Override
-    protected String getFormLabelText() {
+    protected String getFormLabel() {
         return "Add Part";
     }
 
+    @Override
     protected String getIdFieldValue() {
-        return "Auto Gen- Disabled";
+        return "Auto Gen - Disabled";
     }
 
     @Override

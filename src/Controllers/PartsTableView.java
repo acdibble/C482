@@ -17,6 +17,11 @@ import javafx.scene.input.KeyEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * A controller that contains the logic for displaying and filtering parts
+ * in a table view.
+ * @author Andrew Dibble
+ */
 public class PartsTableView implements Initializable {
     @FXML
     private TableView<Part> tableView;
@@ -45,7 +50,11 @@ public class PartsTableView implements Initializable {
         tableView.refresh();
     }
 
-
+    /**
+     * Filters the parts based off the contents of the search box
+     * updates the UI message if no results remain after filtering
+     * @param event
+     */
     @FXML
     private void filterParts(KeyEvent event) {
         ObservableList<Part> filteredParts = parts;
@@ -69,29 +78,49 @@ public class PartsTableView implements Initializable {
         tableView.refresh();
     }
 
+    /**
+     * Sets the parts to be displayed in the underlying table view
+     * @param parts the parts to display
+     */
     public void setParts(ObservableList<Part> parts) {
         this.parts = parts;
         this.tableView.setItems(parts);
         this.tableView.refresh();
     }
 
+    /**
+     * @return the currently selected part in the table view
+     */
     public Part getSelectedPart() {
         return tableView.getSelectionModel().getSelectedItem();
     }
 
+    /**
+     * Refreshes the table view
+     */
     public void refresh() {
         tableView.refresh();
     }
 
+    /**
+     * Changes the height of the table view
+     * @param v the desired height
+     */
     public void setHeight(double v) {
         tableView.setPrefHeight(v);
     }
 
+    /**
+     * Hides and disables the search box if unneeded
+     */
     public void hideSearchBox() {
         partsSearchBox.setVisible(false);
         partsSearchBox.setDisable(true);
     }
 
+    /**
+     * @return the underlying TableView object
+     */
     public TableView<Part> getTableView() {
         return tableView;
     }

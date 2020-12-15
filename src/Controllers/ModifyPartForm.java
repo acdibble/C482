@@ -8,6 +8,12 @@ import Models.Part;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Subclass of the abstract class PartForm which concerns itself solely
+ * with the modification of existing parts
+ * @author Andrew Dibble
+ * @see Controllers.PartForm
+ */
 public class ModifyPartForm extends PartForm {
     private Part part;
 
@@ -23,14 +29,18 @@ public class ModifyPartForm extends PartForm {
     }
 
     @Override
-    protected String getFormLabelText() {
+    protected String getFormLabel() {
         return "Modify Part";
     }
 
+    @Override
     protected String getIdFieldValue() {
         return String.valueOf(part.getId());
     }
 
+    /**
+     * @return whether the type of part changed during editing
+     */
     private boolean newTypeMatchesOld() {
         return (type == Type.InHouse && part instanceof InHouse) || (type == Type.Outsourced && part instanceof Outsourced);
     }

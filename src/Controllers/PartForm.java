@@ -12,11 +12,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Abstract base class for the creation and modification of parts
+ * @author Andrew Dibble
+ * @see Form
+ */
 public abstract class PartForm extends Form implements Initializable {
+    /**
+     * Contains form data that is then passed to an instance of an InHouse or Outsourced
+     * part before saving
+     */
     protected class FormData {
         String name;
         int inv;
@@ -27,7 +35,7 @@ public abstract class PartForm extends Form implements Initializable {
         String companyName;
     }
 
-    public enum Type {
+    protected enum Type {
         InHouse,
         Outsourced
     }
@@ -67,9 +75,6 @@ public abstract class PartForm extends Form implements Initializable {
         this.toggleGroup = new ToggleGroup();
     }
 
-    abstract protected String getIdFieldValue();
-    abstract protected String getFormLabelText();
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         inHouseRadioButton.setToggleGroup(toggleGroup);
@@ -87,9 +92,13 @@ public abstract class PartForm extends Form implements Initializable {
         });
         idField.setDisable(true);
         idField.setText(getIdFieldValue());
-        formLabel.setText(getFormLabelText());
+        formLabel.setText(getFormLabel());
     }
 
+    /**
+     * Populates the form with values from the part being edited
+     * @param part the part being edited
+     */
     protected void fillForm(Part part) {
         idField.setText(String.valueOf(part.getId()));
         nameField.setText(part.getName());
@@ -109,16 +118,23 @@ public abstract class PartForm extends Form implements Initializable {
         }
     }
 
+    /**
+     * updates the form label for the machine ID field when the radio button is toggled
+     */
     protected void setInHouse() {
         type = Type.InHouse;
         extraLabel.setText("Machine ID");
     }
 
+    /**
+     * updates the form label for the company name field when the radio button is toggled
+     */
     private void setOutsourced() {
         type = Type.Outsourced;
         extraLabel.setText("Company Name");
     }
 
+    @Override
     @FXML
     protected void handleClose(ActionEvent event) {
         Stage stage = (Stage) idField.getScene().getWindow();

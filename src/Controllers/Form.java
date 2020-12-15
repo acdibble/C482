@@ -5,15 +5,38 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 
-import java.math.BigDecimal;
-
+/**
+ * The base class for all forms. Contains logic for field validation
+ * and defines abstract methods to give all the forms an identical flow.
+ * @author Andrew Dibble
+ */
 public abstract class Form {
+    /**
+     * Called by JavaFX when the "Cancel" button is clicked.
+     * Called by the programmer after having saved the data.
+     * @param event action event from JavaFX
+     */
     @FXML
     abstract protected void handleClose(ActionEvent event);
 
+    /**
+     * Validates the form data is correct for the given product/part
+     * @throws Exception an exception containing which information did not pass validation
+     */
     abstract protected void validateData() throws Exception;
+
+    /**
+     * Called by the "handleSave" method. It either updates the existing product/part
+     * in the observable list or adds the new product/part to the observable list.
+     */
     abstract protected void saveData();
 
+    /**
+     * Called after the "Save" button is clicked on any form. It tries to validate and
+     * save the data. If a validation error is found, it will display it in an alert
+     * to the user.
+     * @param event action event from JavaFX
+     */
     @FXML
     protected void handleSave(ActionEvent event) {
         try {
@@ -28,7 +51,11 @@ public abstract class Form {
         this.handleClose(event);
     }
 
-    protected void displayError(String message) {
+    /**
+     * Used to display validation errors to the end user.
+     * @param message the error message to be displayed
+     */
+    private void displayError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Field validation error");
         alert.setHeaderText(null);
@@ -36,6 +63,13 @@ public abstract class Form {
         alert.showAndWait();
     }
 
+    /**
+     * Used by all Form classes to convert text to doubles
+     * @param fieldName the name of the field we are parsing, used in error messages
+     * @param field the text field that contains form information
+     * @return the double value parsed from the text field
+     * @throws Exception if the field cannot be parsed into a double, an exception is thrown
+     */
     protected double formatDoubleField(String fieldName, TextField field) throws Exception {
         double result;
         try {
@@ -47,6 +81,13 @@ public abstract class Form {
         return validateIsPositive(fieldName, result);
     }
 
+    /**
+     * Used by all Form classes to check that strings aren't empty
+     * @param fieldName the name of the field we are parsing, used in error messages
+     * @param field the text field that contains form information
+     * @return the String value parsed from the text field
+     * @throws Exception if the field is empty, an exception is thrown
+     */
     protected String formatStringField(String fieldName, TextField field) throws Exception {
         String trimmed = field.getText().trim();
         if (trimmed.length() == 0) {
@@ -55,6 +96,13 @@ public abstract class Form {
         return trimmed;
     }
 
+    /**
+     * Used by all Form classes to convert text to ints
+     * @param fieldName the name of the field we are parsing, used in error messages
+     * @param field the text field that contains form information
+     * @return the int value parsed from the text field
+     * @throws Exception if the field cannot be parsed into an int, an exception is thrown
+     */
     protected int formatIntField(String fieldName, TextField field) throws Exception {
         int result;
         try {
@@ -66,17 +114,57 @@ public abstract class Form {
         return validateIsPositive(fieldName, result);
     }
 
-    protected String getImproperFormatMessage(String field) {
+    /**
+     * Used to format the error message to the end user.
+     * @param field The name of the field with the issue
+     * @return
+     */
+    private String getImproperFormatMessage(String field) {
         return String.format("Unable to save part. Please check format of the field %s", field);
     }
 
-    protected <T extends Number> T validateIsPositive(String field, T value) throws Exception {
-        if (new BigDecimal(value.doubleValue()).compareTo(new BigDecimal(0)) == -1) {
+    /**
+     * Used to ensure that all ints in the form are positive before getting saved
+     * @param field the field being parsed
+     * @param value the integer value that has been parsed
+     * @return
+     * @throws Exception if the int is less than zero, an exception is thrown
+     */
+    private int validateIsPositive(String field, int value) throws Exception {
+        if (value < 0) {
             throw new Exception(String.format("The value for the field %s should not be negative", field));
         }
 
         return value;
     }
 
+    /**
+     * Used to ensure that all doubles in the form are positive before getting saved
+     * @param field the field being parsed
+     * @param value the double value that has been parsed
+     * @return
+     * @throws Exception if the double is less than zero, an exception is thrown
+     */
+    private double validateIsPositive(String field, double value) throws Exception {
+        if (value < 0) {
+            throw new Exception(String.format("The value for the field %s should not be negative", field));
+        }
+
+        return value;
+    }
+
+    /**
+     * @return a string that contains the title for the form window
+     */
     abstract public String getWindowTitle();
+
+    /**
+     * @return a string that contains the label for the form
+     */
+    abstract protected String getFormLabel();
+
+    /**
+     * @return the value to place in the ID text field
+     */
+    abstract protected String getIdFieldValue();
 }
