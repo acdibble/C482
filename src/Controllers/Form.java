@@ -20,7 +20,8 @@ public abstract class Form {
             validateData();
             saveData();
         } catch (Exception e) {
-            this.displayError(e.getMessage());
+            System.out.println(e);
+            displayError(e.getMessage());
             return;
         }
 

@@ -1,7 +1,9 @@
 package Controllers;
 
 import Models.Inventory;
-import Models.Product;
+
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class CreateProductForm extends ProductForm {
     public CreateProductForm(Inventory inventory) {
@@ -9,7 +11,9 @@ public class CreateProductForm extends ProductForm {
     }
 
     protected void saveData() {
-        inventory.addProduct(product);
+        int id = Collections.max(inventory.getAllProducts().stream().map(p -> p.getId()).collect(Collectors.toList())) + 1;
+        formData.setId(id);
+        inventory.addProduct(formData);
     }
 
     @Override

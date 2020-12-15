@@ -35,24 +35,42 @@ public abstract class ProductForm extends Form implements Initializable {
     @FXML
     private TextField minField;
 
+    protected Product formData;
     protected Product product;
     protected Inventory inventory;
 
     public ProductForm(Inventory inventory) {
         this.inventory = inventory;
-        this.product = new Product(0, null, 0, 0, 0, 0);
+        this.formData = new Product(0, null, 0, 0, 0, 0);
     }
 
     public ProductForm(Inventory inventory, Product product) {
         this.inventory = inventory;
         this.product = product;
+        this.formData = new Product(0, null, 0, 0, 0, 0);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setPartsForTables();
         associatedPartsTableViewController.hideSearchBox();
         formLabel.setText(getFormLabelValue());
+        populateForm();
+    }
+
+    private void populateForm() {
+        if (product != null) {
+            idField.setText(String.valueOf(product.getId()));
+            nameField.setText(product.getName());
+            priceField.setText(String.valueOf(product.getPrice()));
+            invField.setText(String.valueOf(product.getStock()));
+            maxField.setText(String.valueOf(product.getMax()));
+            minField.setText(String.valueOf(product.getMin()));
+            product.getAllAssociatedParts().forEach(part -> formData.addAssociatedPart(part));
+        } else {
+            idField.setText("Auto Gen - Disabled");
+        }
+        setPartsForTables();
+        idField.setDisable(true);
     }
 
     abstract protected String getFormLabelValue();
@@ -66,11 +84,11 @@ public abstract class ProductForm extends Form implements Initializable {
     }
 
     protected void validateData() throws Exception {
-        product.setName(formatStringField("Name", nameField));
-        product.setPrice(formatDoubleField("Price", priceField));
-        product.setStock(formatIntField("Inv", invField));
-        product.setMin(formatIntField("Min", minField));
-        product.setMax(formatIntField("Max", maxField));
+        formData.setName(formatStringField("Name", nameField));
+        formData.setPrice(formatDoubleField("Price", priceField));
+        formData.setStock(formatIntField("Inv", invField));
+        formData.setMin(formatIntField("Min", minField));
+        formData.setMax(formatIntField("Max", maxField));
     }
 
     @FXML
@@ -81,21 +99,28 @@ public abstract class ProductForm extends Form implements Initializable {
 
     @FXML
     private void removePart(ActionEvent event) {
-        product.deletedAssociatedPart(associatedPartsTableViewController.getSelectedPart());
-        setPartsForTables();
+        Part part = associatedPartsTableViewController.getSelectedPart();
+        if (part != null) {
+            formData.deletedAssociatedPart(part);
+            setPartsForTables();
+        }
     }
+
 
     @FXML
     private void addPart(ActionEvent event) {
-        product.addAssociatedPart(allPartsTableViewController.getSelectedPart());
-        setPartsForTables();
+        Part part = allPartsTableViewController.getSelectedPart();
+        if (part != null) {
+            formData.addAssociatedPart(part);
+            setPartsForTables();
+        }
     }
 
     private void setPartsForTables() {
-        ObservableList<Part> associatedParts = product.getAllAssociatedParts();
+        ObservableList<Part> associatedParts = formData.getAllAssociatedParts();
         associatedPartsTableViewController.setParts(associatedParts);
 
-        ObservableList<Part> unassociatedParts = inventory.getAllParts().filtered(p -> !associatedParts.contains(p));
+        ObservableList<Part> unassociatedParts = inventory.getAllParts().filtered(part -> !associatedParts.contains(part));
         allPartsTableViewController.setParts(unassociatedParts);
     }
 }

@@ -19,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -135,12 +136,17 @@ public class Main implements Initializable {
     }
 
     private void openForm(Form formController, String resourceURL, TableView tableView, double width, double height) {
+        System.out.println("openForm");
         if (formOpen) return;
+        System.out.println("no form open");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(resourceURL));
             loader.setController(formController);
+            System.out.println("controller set");
             Scene scene = new Scene(loader.load(), width, height);
+            System.out.println("scene created");
             Stage stage = new Stage();
+            System.out.println("new stage created");
             stage.setScene(scene);
             stage.setTitle(formController.getWindowTitle());
             stage.setResizable(false);
@@ -149,16 +155,51 @@ public class Main implements Initializable {
                 tableView.refresh();
             });
             formOpen = true;
+            System.out.println("showing");
             stage.showAndWait();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
         } finally {
             formOpen = false;
         }
     }
 
     @FXML
-    private void createProduct(ActionEvent event) {
-        openProductForm(new CreateProductForm(inventory));
+    private void createProduct(ActionEvent event) throws IOException {
+//        System.out.println("createProduct");
+//        openProductForm(new CreateProductForm(inventory));
+        CreateProductForm formController = new CreateProductForm(inventory);
+        System.out.println("openForm");
+        if (formOpen) return;
+        System.out.println("no form open");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ProductForm.fxml"));
+            loader.setController(formController);
+            System.out.println("controller set");
+            Scene scene = new Scene(loader.load(), 1000, 600);
+            System.out.println("scene created");
+            Stage stage = new Stage();
+            System.out.println("new stage created");
+            stage.setScene(scene);
+            stage.setTitle(formController.getWindowTitle());
+            stage.setResizable(false);
+            stage.setOnHidden(ev -> {
+                formOpen = false;
+                productsTableView.refresh();
+            });
+            formOpen = true;
+            System.out.println("showing");
+            stage.showAndWait();
+        } finally {
+            formOpen = false;
+        }
+    }
+
+    @FXML
+    private void modifyProduct(ActionEvent event) {
+        Product product = productsTableView.getSelectionModel().getSelectedItem();
+        if (product != null) {
+            openProductForm(new ModifyProductForm(inventory, product));
+        }
     }
 }
