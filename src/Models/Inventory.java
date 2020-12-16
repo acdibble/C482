@@ -10,6 +10,9 @@ public class Inventory {
     final private ObservableList<Part> allParts = FXCollections.observableArrayList();
     final private ObservableList<Product> allProducts = FXCollections.observableArrayList();
 
+    /**
+     * @return an inventory with some seed data for testing purposes
+     */
     public static Inventory createWithMockData() {
         Inventory inventory = new Inventory();
 
@@ -25,7 +28,7 @@ public class Inventory {
      * @param newPart the new part to add to the list
      */
     public void addPart(Part newPart) {
-        this.allParts.add(newPart);
+        allParts.add(newPart);
     }
 
     /**
@@ -33,15 +36,16 @@ public class Inventory {
      * @param newProduct the new product to add to the list
      */
     public void addProduct(Product newProduct) {
-        this.allProducts.add(newProduct);
+        allProducts.add(newProduct);
     }
 
     /**
      * @param partId the id of the part to look up
      * @return the part
+     * @throws Exception if the part is not found
      */
     public Part lookupPart(int partId) throws Exception {
-        for (Part part : this.allParts) {
+        for (Part part : allParts) {
             if (part.getId() == partId) {
                 return part;
             }
@@ -54,9 +58,10 @@ public class Inventory {
     /**
      * @param productId the id of the part to look up
      * @return the part
+     * @throws Exception if the product does not exist
      */
     public Product lookupProduct(int productId) throws Exception {
-        for (Product product : this.allProducts) {
+        for (Product product : allProducts) {
             if (product.getId() == productId) {
                 return product;
             }
@@ -66,42 +71,27 @@ public class Inventory {
     }
 
     /**
-     *
      * @param partName the name of the part to look up
      * @return the part
      */
-    public Part lookupPart(String partName) throws Exception {
-        for (Part part: this.allParts) {
-            if (part.getName() == partName) {
-                return part;
-            }
-        }
-
-        throw new Exception("part not found");
+    public ObservableList<Part> lookupPart(String partName) {
+        return allParts.filtered(part -> part.getName().toUpperCase().contains(partName.toUpperCase()));
     }
 
     /**
-     *
      * @param productName the name of the product to look up
      * @return the product
      */
-    public Product lookupProduct(String productName) throws Exception {
-        for (Product product: this.allProducts) {
-            if (product.getName() == productName) {
-                return product;
-            }
-        }
-
-        throw new Exception("product not found");
+    public ObservableList<Product> lookupProduct(String productName) {
+        return allProducts.filtered(product -> product.getName().toUpperCase().contains(productName.toUpperCase()));
     }
 
     /**
-     *
      * @param index the index of the part in the observable list
      * @param selectedPart the changes to apply
      */
     public void updatePart(int index, Part selectedPart) {
-        Part part = this.allParts.get(index);
+        Part part = allParts.get(index);
         part.setId(selectedPart.getId());
         part.setName(selectedPart.getName());
         part.setPrice(selectedPart.getPrice());
@@ -111,12 +101,11 @@ public class Inventory {
     }
 
     /**
-     *
      * @param index the index of the product in the observable list
      * @param selectedProduct the changes to apply
      */
     public void updateProduct(int index, Product selectedProduct) {
-        Product product = this.allProducts.get(index);
+        Product product = allProducts.get(index);
         product.setId(product.getId());
         product.setName(product.getName());
         product.setPrice(product.getPrice());
@@ -126,36 +115,38 @@ public class Inventory {
     }
 
     /**
+     * Could be improved in the future to have some sort of data structure to track the M:N relationships of products
+     * to parts because the runtime of this function will increase as the number of products grow.
      *
      * @param selectedPart the part to remove from the list
      * @return whether the part was successfully removed
      */
     public boolean deletePart(Part selectedPart) {
-        return this.allParts.remove(selectedPart);
+        boolean noDependencies = allProducts
+                .filtered(product -> product.getAllAssociatedParts().contains(selectedPart)).size() == 0;
+
+        return noDependencies && allParts.remove(selectedPart);
     }
 
     /**
-     *
      * @param selectedProduct the product to remove from the list
      * @return whether the product was successfully removed
      */
     public boolean deleteProduct(Product selectedProduct) {
-        return this.allProducts.remove(selectedProduct);
+        return allProducts.remove(selectedProduct);
     }
 
     /**
-     *
      * @return an observable list of all the parts
      */
     public ObservableList<Part> getAllParts() {
-        return this.allParts;
+        return allParts;
     }
 
     /**
-     *
      * @return an observable list of all the products
      */
     public ObservableList<Product> getAllProducts() {
-        return this.allProducts;
+        return allProducts;
     }
 }

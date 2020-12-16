@@ -20,6 +20,14 @@ import java.util.ResourceBundle;
 /**
  * A controller that contains the logic for displaying and filtering parts
  * in a table view.
+ *
+ *
+ * In a future version the Part class and Product class could be modified to be
+ * subclasses of a common class or implement a common interface so that this controller
+ * could be reusable for any interface that implements some simple functionality, e.g.
+ * getId(), getName(), getStock(), and getPrice()
+ *
+ *
  * @author Andrew Dibble
  */
 public class PartsTableView implements Initializable {
@@ -38,6 +46,10 @@ public class PartsTableView implements Initializable {
 
     private ObservableList<Part> parts;
 
+    /**
+     * Override for Initializable#initialize(URL, ResourceBundle)
+     * @see Initializable#initialize(URL, ResourceBundle)
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         partIdCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getId()).asObject());

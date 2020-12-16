@@ -2,7 +2,6 @@ package Controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 
 /**
@@ -10,7 +9,7 @@ import javafx.scene.control.TextField;
  * and defines abstract methods to give all the forms an identical flow.
  * @author Andrew Dibble
  */
-public abstract class Form {
+public abstract class Form extends Base {
     /**
      * Called by JavaFX when the "Cancel" button is clicked.
      * Called by the programmer after having saved the data.
@@ -29,7 +28,16 @@ public abstract class Form {
      * Called by the "handleSave" method. It either updates the existing product/part
      * in the observable list or adds the new product/part to the observable list.
      */
-    abstract protected void saveData();
+    abstract protected boolean saveData();
+
+    /**
+     * Wraps BaseController#displayError(String, String) to provide a static title
+     * @param message the error message to display
+     * @see Base#displayError(String, String)
+     */
+    protected void displayError(String message) {
+        super.displayError("Field validation error", message);
+    }
 
     /**
      * Called after the "Save" button is clicked on any form. It tries to validate and
@@ -41,26 +49,11 @@ public abstract class Form {
     protected void handleSave(ActionEvent event) {
         try {
             validateData();
-            saveData();
+            if (saveData()) handleClose(event);
         } catch (Exception e) {
             System.out.println(e);
             displayError(e.getMessage());
-            return;
         }
-
-        this.handleClose(event);
-    }
-
-    /**
-     * Used to display validation errors to the end user.
-     * @param message the error message to be displayed
-     */
-    private void displayError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Field validation error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     /**
@@ -154,16 +147,23 @@ public abstract class Form {
     }
 
     /**
+     * Dynamically sets the correct title for the form window based off the controller's
+     * intended use
      * @return a string that contains the title for the form window
      */
     abstract public String getWindowTitle();
 
     /**
+     * Dynamically sets the correct label for the form window based off the controller's
+     * intended use
      * @return a string that contains the label for the form
      */
     abstract protected String getFormLabel();
 
     /**
+     * This method was implemented to prevent null pointer issues when trying
+     * to access Product#getId() or Part#getId() on a null product/part
+     *
      * @return the value to place in the ID text field
      */
     abstract protected String getIdFieldValue();

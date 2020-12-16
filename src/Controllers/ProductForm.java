@@ -49,12 +49,10 @@ public abstract class ProductForm extends Form implements Initializable {
         this.formData = new Product(0, null, 0, 0, 0, 0);
     }
 
-    public ProductForm(Inventory inventory, Product product) {
-        this.inventory = inventory;
-        this.product = product;
-        this.formData = new Product(0, null, 0, 0, 0, 0);
-    }
-
+    /**
+     * Override for Initializable#initialize(URL, ResourceBundle)
+     * @see Initializable#initialize(URL, ResourceBundle)
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         associatedPartsTableViewController.hideSearchBox();
@@ -105,6 +103,8 @@ public abstract class ProductForm extends Form implements Initializable {
         if (part != null) {
             formData.deletedAssociatedPart(part);
             setPartsForTables();
+        } else {
+            displayError("Error", "No part selected for removal!");
         }
     }
 
@@ -114,6 +114,8 @@ public abstract class ProductForm extends Form implements Initializable {
         if (part != null) {
             formData.addAssociatedPart(part);
             setPartsForTables();
+        } else {
+            displayError("Error", "No part selected for association!");
         }
     }
 

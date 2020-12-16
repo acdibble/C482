@@ -5,8 +5,8 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -28,7 +27,7 @@ import java.util.ResourceBundle;
  * and spawning new windows when a user wants to add or modify a part or product.
  * @author Andrew Dibble
  */
-public class Main implements Initializable {
+public class Main extends Base implements Initializable {
     @FXML
     private PartsTableView partsTableViewController;
 
@@ -49,10 +48,18 @@ public class Main implements Initializable {
 
     private boolean formOpen = false;
 
+    /**
+     * returns instance of the Main controller
+     * @param inventory the inventory to use for CRUD actions on the parts and products
+     */
     public Main(Inventory inventory) {
         this.inventory = inventory;
     }
 
+    /**
+     * Override for Initializable#initialize(URL, ResourceBundle)
+     * @see Initializable#initialize(URL, ResourceBundle)
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeProductsViewTable();
@@ -91,9 +98,11 @@ public class Main implements Initializable {
         String value = productsSearchBox.getText().toUpperCase().trim();
 
         if (value != "") {
-            products = new FilteredList<>(products).filtered(product -> {
-                return product.getName().toUpperCase().contains(value) || String.valueOf(product.getId()).contains(value);
-            });
+            try {
+                products = FXCollections.observableArrayList(inventory.lookupProduct(Integer.parseInt(value)));
+            } catch (Exception e) {
+                products = inventory.lookupProduct(value);
+            }
         }
 
         if (products.size() == 0) {
@@ -129,8 +138,15 @@ public class Main implements Initializable {
     @FXML
     private void deletePart(ActionEvent event) {
         Part selectedPart = partsTableViewController.getSelectedPart();
-        inventory.deletePart(selectedPart);
-        partsTableViewController.refresh();
+        if (selectedPart != null) {
+            if (inventory.deletePart(selectedPart)) {
+                partsTableViewController.refresh();
+            } else {
+                displayError("Error", "Unable to delete part. Please ensure it is not associated with any products!");
+            }
+        } else {
+            displayError("Error", "No part was selected for deletion!");
+        }
     }
 
     /**
@@ -140,8 +156,12 @@ public class Main implements Initializable {
     @FXML
     private void deleteProduct(ActionEvent event) {
         Product selectedProduct = productsTableView.getSelectionModel().getSelectedItem();
-        inventory.deleteProduct(selectedProduct);
-        productsTableView.refresh();
+        if (selectedProduct != null) {
+            inventory.deleteProduct(selectedProduct);
+            productsTableView.refresh();
+        } else {
+            displayError("Error", "No product was selected for deletion!");
+        }
     }
 
     /**
@@ -168,7 +188,11 @@ public class Main implements Initializable {
     @FXML
     private void modifyPart(ActionEvent event) {
         Part selectedPart = partsTableViewController.getSelectedPart();
-        openPartForm(new ModifyPartForm(inventory, selectedPart));
+        if (selectedPart != null) {
+            openPartForm(new ModifyPartForm(inventory, selectedPart));
+        } else {
+            displayError("Error", "No part was selected for modification!");
+        }
     }
 
     /**
@@ -197,6 +221,8 @@ public class Main implements Initializable {
         Product product = productsTableView.getSelectionModel().getSelectedItem();
         if (product != null) {
             openProductForm(new ModifyProductForm(inventory, product));
+        } else {
+            displayError("Error", "No product was selected for modification!");
         }
     }
 

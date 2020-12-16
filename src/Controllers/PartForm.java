@@ -35,6 +35,9 @@ public abstract class PartForm extends Form implements Initializable {
         String companyName;
     }
 
+    /**
+     * used to determine which type of part to instantiate
+     */
     protected enum Type {
         InHouse,
         Outsourced
@@ -70,11 +73,18 @@ public abstract class PartForm extends Form implements Initializable {
 
     protected FormData validatedData;
 
+    /**
+     * instantiates an instance of the Part form with the inventory provided
+     * @param inventory the inventory to use
+     */
     public PartForm(Inventory inventory) {
         this.inventory = inventory;
         this.toggleGroup = new ToggleGroup();
     }
 
+    /**
+     * @see Initializable#initialize(URL, ResourceBundle)
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         inHouseRadioButton.setToggleGroup(toggleGroup);
@@ -134,6 +144,10 @@ public abstract class PartForm extends Form implements Initializable {
         extraLabel.setText("Company Name");
     }
 
+    /**
+     * Override for Form#handleClose(ActionEvent)
+     * @see Form#handleClose(ActionEvent) 
+     */
     @Override
     @FXML
     protected void handleClose(ActionEvent event) {
@@ -141,6 +155,10 @@ public abstract class PartForm extends Form implements Initializable {
         stage.hide();
     }
 
+    /**
+     * Override for Form#validateData()
+     * @see Form#validateData() 
+     */
     @Override
     protected void validateData() throws Exception {
         FormData formData = new FormData();

@@ -25,7 +25,6 @@ public class Product {
     }
 
     /**
-     *
      * @param id the new id for the product
      */
     public void setId(int id) {
@@ -33,7 +32,6 @@ public class Product {
     }
 
     /**
-     *
      * @param name the new name for the product
      */
     public void setName(String name) {
@@ -41,7 +39,6 @@ public class Product {
     }
 
     /**
-     *
      * @param price the new price for the product
      */
     public void setPrice(double price) {
@@ -49,7 +46,6 @@ public class Product {
     }
 
     /**
-     *
      * @param stock the new stock for the product
      */
     public void setStock(int stock) {
@@ -57,7 +53,6 @@ public class Product {
     }
 
     /**
-     *
      * @param min the new min for the product
      */
     public void setMin(int min) {
@@ -65,7 +60,6 @@ public class Product {
     }
 
     /**
-     *
      * @param max the new max for the product
      */
     public void setMax(int max) {
@@ -73,7 +67,6 @@ public class Product {
     }
 
     /**
-     *
      * @return the id of the product
      */
     public int getId() {
@@ -81,7 +74,6 @@ public class Product {
     }
 
     /**
-     *
      * @return the name of the product
      */
     public String getName() {
@@ -89,7 +81,6 @@ public class Product {
     }
 
     /**
-     *
      * @return the price of the product
      */
     public double getPrice() {
@@ -97,7 +88,6 @@ public class Product {
     }
 
     /**
-     *
      * @return the stock of the product
      */
     public int getStock() {
@@ -105,7 +95,6 @@ public class Product {
     }
 
     /**
-     *
      * @return the min of the product
      */
     public int getMin() {
@@ -113,7 +102,6 @@ public class Product {
     }
 
     /**
-     *
      * @return the max of the product
      */
     public int getMax() {
@@ -121,7 +109,6 @@ public class Product {
     }
 
     /**
-     *
      * @param part the part to add to the list of associated parts
      */
     public void addAssociatedPart(Part part) {
@@ -129,7 +116,6 @@ public class Product {
     }
 
     /**
-     *
      * @param selectedAssociatedPart the part to be removed from the list of associated parts
      * @return whether the part was successfully removed from the list
      */
@@ -138,7 +124,6 @@ public class Product {
     }
 
     /**
-     *
      * @return an observable list of associated parts
      */
     public ObservableList<Part> getAllAssociatedParts() {

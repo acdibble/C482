@@ -9,6 +9,10 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    /**
+     * Override for Application#start(Stage)
+     * @see Application#start(Stage)
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Main.fxml"));
