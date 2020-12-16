@@ -58,7 +58,7 @@ public class CreatePartForm extends PartForm {
      * @see Form#saveData()
      */
     @Override
-    protected boolean saveData() {
+    protected void saveData() {
         int id = Collections.max(inventory.getAllParts().stream().map(part -> part.getId()).collect(Collectors.toList())) + 1;
 
         if (type == Type.InHouse) {
@@ -66,8 +66,6 @@ public class CreatePartForm extends PartForm {
         } else {
             inventory.addPart(new Outsourced(id, validatedData.name, validatedData.price, validatedData.inv, validatedData.min, validatedData.max, validatedData.companyName));
         }
-
-        return true;
     }
 
     /**

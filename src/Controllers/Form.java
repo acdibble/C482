@@ -28,7 +28,7 @@ public abstract class Form extends Base {
      * Called by the "handleSave" method. It either updates the existing product/part
      * in the observable list or adds the new product/part to the observable list.
      */
-    abstract protected boolean saveData();
+    abstract protected void saveData();
 
     /**
      * Wraps BaseController#displayError(String, String) to provide a static title
@@ -49,7 +49,8 @@ public abstract class Form extends Base {
     protected void handleSave(ActionEvent event) {
         try {
             validateData();
-            if (saveData()) handleClose(event);
+            saveData();
+            handleClose(event);
         } catch (Exception e) {
             System.out.println(e);
             displayError(e.getMessage());
@@ -112,7 +113,7 @@ public abstract class Form extends Base {
     /**
      * Used to format the error message to the end user.
      * @param field The name of the field with the issue
-     * @return
+     * @return a string error message to be displayed to the end user
      */
     private String getImproperFormatMessage(String field) {
         return String.format("Unable to save part. Please check format of the field %s", field);
@@ -122,7 +123,7 @@ public abstract class Form extends Base {
      * Used to ensure that all ints in the form are positive before getting saved
      * @param field the field being parsed
      * @param value the integer value that has been parsed
-     * @return
+     * @return the param value if it is positive
      * @throws Exception if the int is less than zero, an exception is thrown
      */
     private int validateIsPositive(String field, int value) throws Exception {
@@ -137,7 +138,7 @@ public abstract class Form extends Base {
      * Used to ensure that all doubles in the form are positive before getting saved
      * @param field the field being parsed
      * @param value the double value that has been parsed
-     * @return
+     * @return the param value if it is positive
      * @throws Exception if the double is less than zero, an exception is thrown
      */
     private double validateIsPositive(String field, double value) throws Exception {

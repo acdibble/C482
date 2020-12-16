@@ -12,8 +12,8 @@ import Models.Product;
 public class ModifyProductForm extends ProductForm {
     /**
      * returns an instance of the ModifyProductForm with the inventory and product provided
-     * @param inventory
-     * @param product
+     * @param inventory the inventory to use for part selection
+     * @param product the product being modified
      */
     public ModifyProductForm(Inventory inventory, Product product) {
         super(inventory);
@@ -43,11 +43,10 @@ public class ModifyProductForm extends ProductForm {
      * @see Form#saveData()
      */
     @Override
-    protected boolean saveData() {
+    protected void saveData() {
         formData.setId(product.getId());
         inventory.deleteProduct(product);
         inventory.addProduct(formData);
-        return true;
     }
 
     /**

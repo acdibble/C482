@@ -26,11 +26,10 @@ public class CreateProductForm extends ProductForm {
      * @see Form#saveData()
      */
     @Override
-    protected boolean saveData() {
+    protected void saveData() {
         int id = Collections.max(inventory.getAllProducts().stream().map(p -> p.getId()).collect(Collectors.toList())) + 1;
         formData.setId(id);
         inventory.addProduct(formData);
-        return true;
     }
 
     /**

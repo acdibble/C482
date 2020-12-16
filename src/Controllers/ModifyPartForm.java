@@ -68,7 +68,7 @@ public class ModifyPartForm extends PartForm {
      * @see Form#saveData()
      */
     @Override
-    protected boolean saveData() {
+    protected void saveData() {
         if (!newTypeMatchesOld()) {
             ObservableList<Product> associatedProducts = null;
            if (!inventory.deletePart(part)) {
@@ -96,7 +96,6 @@ public class ModifyPartForm extends PartForm {
         } else {
             ((InHouse) part).setMachineId(validatedData.machineId);
         }
-        return true;
     }
 
     /**

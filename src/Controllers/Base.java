@@ -2,9 +2,15 @@ package Controllers;
 
 import javafx.scene.control.Alert;
 
+/**
+ * An abstract controller Base class that contains some logic common enough for all controllers to benefit.
+ *
+ * @author Andrew Dibble
+ */
 public abstract class Base {
     /**
      * Used to display validation errors to the end user.
+     * @param title the title for the error message alert
      * @param message the error message to be displayed
      */
     protected void displayError(String title, String message) {

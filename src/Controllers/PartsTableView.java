@@ -76,7 +76,7 @@ public class PartsTableView extends Base implements Initializable {
     /**
      * Filters the parts based off the contents of the search box
      * updates the UI message if no results remain after filtering
-     * @param event
+     * @param event a JavaFX KeyEvent
      */
     @FXML
     private void filterParts(KeyEvent event) {
