@@ -63,10 +63,12 @@ public abstract class Form extends Base {
      * @return the double value parsed from the text field
      * @throws Exception if the field cannot be parsed into a double, an exception is thrown
      */
-    protected double formatDoubleField(String fieldName, TextField field) throws Exception {
+    protected double parseDoubleField(String fieldName, TextField field) throws Exception {
         double result;
         try {
-            result = Double.parseDouble(field.getText());
+            String value = field.getText().trim();
+            if (!value.matches("^\\d*\\.?\\d?\\d?$")) throw new NumberFormatException();
+            result = Double.parseDouble(value);
         } catch (NumberFormatException e) {
             throw new Exception(getImproperFormatMessage(fieldName));
         }
@@ -81,7 +83,7 @@ public abstract class Form extends Base {
      * @return the String value parsed from the text field
      * @throws Exception if the field is empty, an exception is thrown
      */
-    protected String formatStringField(String fieldName, TextField field) throws Exception {
+    protected String parseStringField(String fieldName, TextField field) throws Exception {
         String trimmed = field.getText().trim();
         if (trimmed.length() == 0) {
             throw new Exception(String.format("The field for %s should not be empty", fieldName));
@@ -96,10 +98,10 @@ public abstract class Form extends Base {
      * @return the int value parsed from the text field
      * @throws Exception if the field cannot be parsed into an int, an exception is thrown
      */
-    protected int formatIntField(String fieldName, TextField field) throws Exception {
+    protected int parseIntField(String fieldName, TextField field) throws Exception {
         int result;
         try {
-            result = Integer.parseInt(field.getText());
+            result = Integer.parseInt(field.getText().trim());
         } catch (NumberFormatException e) {
             throw new Exception(getImproperFormatMessage(fieldName));
         }

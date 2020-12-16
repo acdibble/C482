@@ -83,6 +83,8 @@ public abstract class PartForm extends Form implements Initializable {
     }
 
     /**
+     * Override for Intializable#initialize(URL, ResourceBundle)
+     * Fills in the form values and sets the radio buttons up properly
      * @see Initializable#initialize(URL, ResourceBundle)
      */
     @Override
@@ -113,7 +115,7 @@ public abstract class PartForm extends Form implements Initializable {
         idField.setText(String.valueOf(part.getId()));
         nameField.setText(part.getName());
         invField.setText(String.valueOf(part.getStock()));
-        priceField.setText(String.valueOf(part.getPrice()));
+        priceField.setText(formatDoubleField(part.getPrice()));
         maxField.setText(String.valueOf(part.getMax()));
         minField.setText(String.valueOf(part.getMin()));
 
@@ -162,20 +164,20 @@ public abstract class PartForm extends Form implements Initializable {
     @Override
     protected void validateData() throws Exception {
         FormData formData = new FormData();
-        formData.name = formatStringField("Name", nameField);
-        formData.inv = formatIntField("Inv", invField);
-        formData.price = formatDoubleField("Price", priceField);
-        formData.max = formatIntField("Max", maxField);
-        formData.min = formatIntField("Min", minField);
+        formData.name = parseStringField("Name", nameField);
+        formData.inv = parseIntField("Inv", invField);
+        formData.price = parseDoubleField("Price", priceField);
+        formData.max = parseIntField("Max", maxField);
+        formData.min = parseIntField("Min", minField);
 
         if (formData.min > formData.inv || formData.max < formData.inv) {
             throw new Exception("Inv should be between min and max.");
         }
 
         if (type == Type.InHouse) {
-            formData.machineId = formatIntField("Machine ID", extraField);
+            formData.machineId = parseIntField("Machine ID", extraField);
         } else {
-            formData.companyName = formatStringField("Company Name", extraField);
+            formData.companyName = parseStringField("Company Name", extraField);
         }
         validatedData = formData;
     }

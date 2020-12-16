@@ -8,10 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
@@ -25,12 +22,13 @@ import java.util.ResourceBundle;
  * In a future version the Part class and Product class could be modified to be
  * subclasses of a common class or implement a common interface so that this controller
  * could be reusable for any interface that implements some simple functionality, e.g.
- * getId(), getName(), getStock(), and getPrice()
+ * getId(), getName(), getStock(), and getPrice(). This refactor is unfortunately not possible
+ * with the constraint of not being able to modify the provided Part class.
  *
  *
  * @author Andrew Dibble
  */
-public class PartsTableView implements Initializable {
+public class PartsTableView extends Base implements Initializable {
     @FXML
     private TableView<Part> tableView;
     @FXML
@@ -48,6 +46,8 @@ public class PartsTableView implements Initializable {
 
     /**
      * Override for Initializable#initialize(URL, ResourceBundle)
+     * Called by JavaFX after all the GUI objects have been created and are ready for interaction
+     * This initializes the table view
      * @see Initializable#initialize(URL, ResourceBundle)
      */
     @Override
@@ -56,6 +56,17 @@ public class PartsTableView implements Initializable {
         partNameCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getName()));
         partInventoryCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getStock()).asObject());
         partPriceCol.setCellValueFactory(param -> new SimpleDoubleProperty(param.getValue().getPrice()).asObject());
+        partPriceCol.setCellFactory(tc -> new TableCell<Part, Double>(){
+            @Override
+            protected void updateItem(Double value, boolean empty) {
+                super.updateItem(value, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(formatDoubleField(value.doubleValue()));
+                }
+            }
+        });
         if (parts != null) {
             tableView.setItems(parts);
         }

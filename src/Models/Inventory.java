@@ -16,10 +16,14 @@ public class Inventory {
     public static Inventory createWithMockData() {
         Inventory inventory = new Inventory();
 
-        inventory.addPart(new InHouse(1, "Test", 0.49, 123, 0, 9001, 2));
+        Part part = new InHouse(1, "Test", 0.49, 123, 0, 9001, 2);
+        inventory.addPart(part);
         inventory.addPart(new InHouse(2, "Widget", 0.90, 456, 0, 9001, 2));
         inventory.addPart(new Outsourced(3, "Another", 0.91, 789, 0, 9001, "didney"));
-        inventory.addProduct(new Product(1, "Fun toy", 1.00, 70, 1, 100));
+        Product product = new Product(1, "Fun toy", 1.00, 70, 1, 100);
+        product.addAssociatedPart(part);
+        inventory.addProduct(product);
+        inventory.addProduct(new Product(2, "yo yo", 3.50, 100, 0, 1000));
 
         return inventory;
     }
@@ -56,6 +60,9 @@ public class Inventory {
 
 
     /**
+     * No specification as to what action should be taken when the product isn't found so it throws an error to fix
+     * a null-pointer bug when filtering the product table view and simplify the logic there
+     *
      * @param productId the id of the part to look up
      * @return the part
      * @throws Exception if the product does not exist
@@ -115,8 +122,13 @@ public class Inventory {
     }
 
     /**
-     * Could be improved in the future to have some sort of data structure to track the M:N relationships of products
-     * to parts because the runtime of this function will increase as the number of products grow.
+     * IMPROVEMENT POSSIBILITY:
+     * Could be improved in the future to have some sort of data structure (or better database) to track the M:N
+     * relationships of products to parts because the runtime of this function will increase as the number of products
+     * grow.
+     *
+     * An O(1) lookup for associated parts would improve the performance here and when changing the type of part from
+     * InHouse to Outsourced or vice versa.
      *
      * @param selectedPart the part to remove from the list
      * @return whether the part was successfully removed

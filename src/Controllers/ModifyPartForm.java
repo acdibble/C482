@@ -1,9 +1,7 @@
 package Controllers;
 
-import Models.InHouse;
-import Models.Inventory;
-import Models.Outsourced;
-import Models.Part;
+import Models.*;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
@@ -29,8 +27,8 @@ public class ModifyPartForm extends PartForm {
     }
 
     /**
-     * Override for Initializable#initialize(URL, ResourceBundle)
-     * @see Initializable#initialize(URL, ResourceBundle)
+     * Override for PartForm#initialize(URL, ResourceBundle)
+     * @see PartForm#initialize(URL, ResourceBundle)
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -64,14 +62,19 @@ public class ModifyPartForm extends PartForm {
 
     /**
      * Override for Form#saveData()
+     *
+     * Creates a new part if the type changed, which includes updating the associated parts of any affected products
+     *
      * @see Form#saveData()
      */
     @Override
     protected boolean saveData() {
         if (!newTypeMatchesOld()) {
+            ObservableList<Product> associatedProducts = null;
            if (!inventory.deletePart(part)) {
-               displayError("Error", "The type of this part cannot be changed as it is currently associated with a product!");
-               return false;
+               associatedProducts = inventory.getAllProducts().filtered(p -> p.getAllAssociatedParts().contains(part));
+               associatedProducts.forEach(p -> p.deletedAssociatedPart(part));
+               inventory.deletePart(part);
            }
            if (type == Type.InHouse) {
                part = new InHouse(part.getId(), "", 0.0, 0, 0, 0, 0);
@@ -79,6 +82,7 @@ public class ModifyPartForm extends PartForm {
                part = new Outsourced(part.getId(), "", 0.0, 0, 0, 0, null);
            }
            inventory.addPart(part);
+           if (associatedProducts != null) associatedProducts.forEach(p -> p.addAssociatedPart(part));
         }
 
         part.setName(validatedData.name);

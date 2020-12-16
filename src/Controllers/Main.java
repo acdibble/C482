@@ -12,10 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
@@ -75,6 +72,19 @@ public class Main extends Base implements Initializable {
         productNameCol.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getName()));
         productInventoryCol.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getStock()).asObject());
         productPriceCol.setCellValueFactory(param -> new SimpleDoubleProperty(param.getValue().getPrice()).asObject());
+
+        // this fixes an previous issue with improper formatting of the double column
+        productPriceCol.setCellFactory(tc -> new TableCell<Product, Double>(){
+            @Override
+            protected void updateItem(Double value, boolean empty) {
+                super.updateItem(value, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(formatDoubleField(value.doubleValue()));
+                }
+            }
+        });
         productsTableView.setItems(inventory.getAllProducts());
         productsTableView.refresh();
     }

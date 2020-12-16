@@ -61,13 +61,13 @@ public abstract class ProductForm extends Form implements Initializable {
     }
 
     /**
-     * Fills in the form with product data, if modifying, or just the ID field
+     * Fills in the form with the existing product data, if modifying, or just the ID field
      */
     private void populateForm() {
         if (product != null) {
             idField.setText(String.valueOf(product.getId()));
             nameField.setText(product.getName());
-            priceField.setText(String.valueOf(product.getPrice()));
+            priceField.setText(formatDoubleField(product.getPrice()));
             invField.setText(String.valueOf(product.getStock()));
             maxField.setText(String.valueOf(product.getMax()));
             minField.setText(String.valueOf(product.getMin()));
@@ -83,13 +83,18 @@ public abstract class ProductForm extends Form implements Initializable {
      * @throws Exception if any parsing or field validation fails
      */
     protected void validateData() throws Exception {
-        formData.setName(formatStringField("Name", nameField));
-        formData.setPrice(formatDoubleField("Price", priceField));
-        formData.setStock(formatIntField("Inv", invField));
-        formData.setMin(formatIntField("Min", minField));
-        formData.setMax(formatIntField("Max", maxField));
+        formData.setName(parseStringField("Name", nameField));
+        formData.setPrice(parseDoubleField("Price", priceField));
+        formData.setStock(parseIntField("Inv", invField));
+        formData.setMin(parseIntField("Min", minField));
+        formData.setMax(parseIntField("Max", maxField));
     }
 
+    /**
+     * Override for Form#handleClose()
+     * @param event action event from JavaFX
+     * @see Form#handleClose(ActionEvent)
+     */
     @Override
     @FXML
     protected void handleClose(ActionEvent event) {
@@ -97,6 +102,10 @@ public abstract class ProductForm extends Form implements Initializable {
         stage.hide();
     }
 
+    /**
+     * Removes the selected part from the associated parts list or displays an error if none is selected
+     * @param event action event from JavaFX
+     */
     @FXML
     private void removePart(ActionEvent event) {
         Part part = associatedPartsTableViewController.getSelectedPart();
@@ -108,6 +117,10 @@ public abstract class ProductForm extends Form implements Initializable {
         }
     }
 
+    /**
+     * Adds the selected part to the associated parts list or displays an error if none is selected
+     * @param event action event from JavaFX
+     */
     @FXML
     private void addPart(ActionEvent event) {
         Part part = allPartsTableViewController.getSelectedPart();
@@ -119,6 +132,9 @@ public abstract class ProductForm extends Form implements Initializable {
         }
     }
 
+    /**
+     * Updates the parts in the two tables after either adding/removing to/from the associated parts list
+     */
     private void setPartsForTables() {
         ObservableList<Part> associatedParts = formData.getAllAssociatedParts();
         associatedPartsTableViewController.setParts(associatedParts);

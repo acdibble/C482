@@ -3,6 +3,7 @@ package Controllers;
 import Models.InHouse;
 import Models.Inventory;
 import Models.Outsourced;
+import javafx.fxml.Initializable;
 
 import java.net.URL;
 import java.util.Collections;
@@ -25,8 +26,8 @@ public class CreatePartForm extends PartForm {
     }
 
     /**
-     * Override for Initializable#initialize(URL, ResourceBundle)
-     * @see javafx.fxml.Initializable#initialize(URL, ResourceBundle)
+     * Override for PartForm#initialize(URL, ResourceBundle)
+     * @see PartForm#initialize(URL, ResourceBundle)
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
